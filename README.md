@@ -1,5 +1,4 @@
 
-````markdown
 # Assignment 2: MinHeap Implementation
 
 ## Overview
@@ -159,4 +158,12 @@ python plot_benchmarks.py
 * `docs/performance-plots/minheap_before_after.png` – Visualization of performance improvement
 
 ---
+
+## Key Features
+
+* Bulk Heap Construction (Floyd's Algorithm, O(n))
+* Comprehensive Metrics: comparisons, swaps, array accesses, execution time
+* Multiple Benchmark Types: CLI & JMH
+* Various Input Distributions: random, sorted, reverse-sorted, nearly-sorted
+* Reproducible Results using random seeds
 
