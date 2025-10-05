@@ -1,7 +1,6 @@
 package com.algorithms.minheap.algorithm;
 
 import com.algorithms.minheap.metrics.PerformanceTracker;
-import java.util.Arrays;
 
 public class MinHeap {
     private int[] heap;
@@ -14,26 +13,36 @@ public class MinHeap {
         this.tracker = tracker;
     }
 
+    // Bulk build from array (O(n))
+    public MinHeap(int[] array, PerformanceTracker tracker) {
+        this.heap = array.clone();
+        this.size = array.length;
+        this.tracker = tracker;
+        buildHeap();
+    }
+
+    private void buildHeap() {
+        for (int i = parent(size - 1); i >= 0; i--) {
+            heapifyDown(i);
+        }
+    }
+
     public void insert(int value) {
-        tracker.startTimer();
         ensureCapacity();
         heap[size] = value;
         tracker.incrementArrayAccesses();
         size++;
         heapifyUp(size - 1);
-        tracker.stopTimer();
     }
 
     public int extractMin() {
         if (isEmpty()) throw new IllegalStateException("Heap is empty");
-        tracker.startTimer();
         int min = heap[0];
         heap[0] = heap[size - 1];
         tracker.incrementArrayAccesses();
         tracker.incrementSwaps();
         size--;
         heapifyDown(0);
-        tracker.stopTimer();
         return min;
     }
 
@@ -46,10 +55,12 @@ public class MinHeap {
     public boolean isEmpty() { return size == 0; }
 
     private void heapifyUp(int i) {
-        while (i > 0 && heap[parent(i)] > heap[i]) {
+        while (i > 0) {
+            int p = parent(i);
             tracker.incrementComparisons();
-            swap(i, parent(i));
-            i = parent(i);
+            if (heap[i] >= heap[p]) break;
+            swap(i, p);
+            i = p;
         }
     }
 
@@ -59,14 +70,15 @@ public class MinHeap {
             int right = rightChild(i);
             int smallest = i;
 
-            if (left < size && heap[left] < heap[smallest]) {
+            if (left < size) {
                 tracker.incrementComparisons();
-                smallest = left;
+                if (heap[left] < heap[smallest]) smallest = left;
             }
-            if (right < size && heap[right] < heap[smallest]) {
+            if (right < size) {
                 tracker.incrementComparisons();
-                smallest = right;
+                if (heap[right] < heap[smallest]) smallest = right;
             }
+
             if (smallest == i) break;
             swap(i, smallest);
             i = smallest;
@@ -83,7 +95,9 @@ public class MinHeap {
 
     private void ensureCapacity() {
         if (size == heap.length) {
-            heap = Arrays.copyOf(heap, heap.length * 2);
+            int[] newHeap = new int[heap.length * 2];
+            System.arraycopy(heap, 0, newHeap, 0, heap.length);
+            heap = newHeap;
         }
     }
 
